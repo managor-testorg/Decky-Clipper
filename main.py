@@ -21,12 +21,12 @@ class Plugin:
     pipeline = f"{gstpluginspath} gst-launch-1.0 {videopipeline} {audiopipeline} ! {filecreationpipeline}"
 
     decky.logger.info("Running pipeline: " + pipeline)
-    self._process = subprocess.Popen(pipeline, shell=True, env=self._env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    Plugin._process = subprocess.Popen(pipeline, shell=True, env=self._env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     return
 
   async def stop_record(self):
-    decommission = self._process
-    self._process = None
+    decommission = Plugin._process
+    Plugin._process = None
     decky.logger.info("Sending signal to terminate.")
     decommission.send_signal(signal.SIGINT)
     try:
@@ -40,7 +40,7 @@ class Plugin:
     return
 
   async def is_recording(self) -> bool:
-    return self._process != None
+    return Plugin._process != None
 
 
   # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
