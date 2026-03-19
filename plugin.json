@@ -6,6 +6,6 @@
   "publish": {
     "tags": ["template", "root"],
     "description": "Record your screen.",
-    "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/PluginLoader"
+    "image": "https://raw.githubusercontent.com/Managor/Decky-Clipper/refs/heads/main/assets/screenshot.jpg"
   }
 }
