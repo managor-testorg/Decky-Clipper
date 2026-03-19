@@ -12,16 +12,18 @@ class Plugin:
   _env = {**os.environ, "LD_LIBRARY_PATH":"", "XDG_RUNTIME_DIR":"/run/user/1000"}
   # Record the gamescope pipewire node
   async def start_record(self):
-    gstpluginspath = decky.DECKY_PLUGIN_DIR + "/bin/gstreamer-1.0"
+    gstpluginspath = f"GST_PLUGIN_PATH={decky.DECKY_PLUGIN_DIR}/bin/gstreamer-1.0"
+    videopipeline = "pipewiresrc do-timestamp=true target-object=gamescope keepalive-time=33 resend-last=true ! videoconvert ! vah264enc ! h264parse ! mux."
+    audiopipeline = "pipewiresrc do-timestamp=true stream-properties=props,stream.capture.sink=true ! opusenc"
+    filecreationpipeline = f"matroskamux name=mux ! filesink location={decky.HOME}/Videos/test.mkv"
 
-    filesinklocation = decky.HOME + "/Videos/test.mkv"
-    pipeline = f"GST_PLUGIN_PATH={gstpluginspath} gst-launch-1.0 -ev pipewiresrc do-timestamp=true target-object=gamescope keepalive-time=33 ! videoconvert ! vah264enc ! h264parse ! mux. pipewiresrc do-timestamp=true stream-properties=props,stream.capture.sink=true ! opusenc ! matroskamux name=mux ! filesink location={filesinklocation}"
+    pipeline = f"{gstpluginspath} gst-launch-1.0 {videopipeline} {audiopipeline} ! {filecreationpipeline}"
 
     decky.logger.info("Running pipeline: " + pipeline)
-    process = subprocess.Popen(pipeline, shell=True, env=self._env)
+    process = subprocess.Popen(pipeline, shell=True, env=self._env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
+    time.sleep(5)
     decky.logger.info("Sending signal to terminate.")
-    time.sleep(3)
     process.send_signal(signal.SIGINT)
     try:
       process.wait(timeout=3)
@@ -29,7 +31,9 @@ class Plugin:
       decky.logger.info("Couldn't terminate. Killing.")
       process.kill()
 
-
+    assert process.stdout is not None
+    for line in process.stdout:
+      decky.logger.info("stdout: " + line)
 
 
 
