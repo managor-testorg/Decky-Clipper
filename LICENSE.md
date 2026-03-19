@@ -359,11 +359,7 @@ applications with the library. If this is what you want to do, use the
 License](https://www.gnu.org/licenses/lgpl.html) instead of this
 License.
 
-
-
-
-
-
+---------------------------------------------------------------------
 
 BSD 3-Clause License
 
