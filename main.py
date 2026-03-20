@@ -11,8 +11,9 @@ class Plugin:
   _env = {**os.environ, "LD_LIBRARY_PATH":"", "XDG_RUNTIME_DIR":"/run/user/1000"}
   # Record the gamescope pipewire node
   async def start_record(self):
+    # Generate a gstreamer pipeline
     gstpluginspath = f"GST_PLUGIN_PATH={decky.DECKY_PLUGIN_DIR}/bin/gstreamer-1.0"
-    videopipeline = "pipewiresrc do-timestamp=true target-object=gamescope keepalive-time=33 resend-last=true ! videoconvert ! vah264enc ! h264parse ! mux."
+    videopipeline = "pipewiresrc do-timestamp=true target-object=gamescope ! videoconvert ! vah264enc ! h264parse ! mux."
     audiopipeline = "pipewiresrc do-timestamp=true stream-properties=props,stream.capture.sink=true ! opusenc"
     filename = f"{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.mkv"
     filecreationpipeline = f"matroskamux name=mux ! filesink location={decky.HOME}/Videos/{filename}"
