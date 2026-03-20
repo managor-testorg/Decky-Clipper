@@ -33,4 +33,4 @@ jobs:
       - name: Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "out/Decky Clipper.zip"
+          artifacts: "out/Decky-Clipper.zip"
