@@ -10,15 +10,18 @@ class Plugin:
   _process = None
   _env = {**os.environ, "LD_LIBRARY_PATH":"", "XDG_RUNTIME_DIR":"/run/user/1000"}
   # Record the gamescope pipewire node
-  async def start_record(self, app_name):
+  async def start_record(self, app_name: str, microphone: bool):
     # Generate a gstreamer pipeline
-    gstpluginspath = f"GST_PLUGIN_PATH={decky.DECKY_PLUGIN_DIR}/bin/gstreamer-1.0"
-    videopipeline = "pipewiresrc do-timestamp=true target-object=gamescope ! videoconvert ! vah264enc ! h264parse ! mux."
-    audiopipeline = "pipewiresrc do-timestamp=true stream-properties=props,stream.capture.sink=true ! opusenc"
+    gstreamer = f"GST_PLUGIN_PATH={decky.DECKY_PLUGIN_DIR}/bin/gstreamer-1.0 gst-launch-1.0 "
+    videopipeline = "pipewiresrc do-timestamp=true target-object=gamescope client-name=Video-capture ! videoconvert ! vah264enc ! h264parse ! mux. "
+    audiosource = "pipewiresrc do-timestamp=true stream-properties=props,stream.capture.sink=true client-name=Speaker-capture ! mixer. "
+    if microphone:
+      audiosource = audiosource + "pipewiresrc do-timestamp=true client-name=Microphone-capture ! mixer. "
+    audioencode = "audiomixer name=mixer ! opusenc ! mux. "
     filename = f"{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}-{app_name}.mkv"
-    filecreationpipeline = f"matroskamux name=mux ! filesink location={decky.HOME}/Videos/{filename}"
+    filecreation = f"matroskamux name=mux ! filesink location={decky.HOME}/Videos/{filename}"
 
-    pipeline = f"{gstpluginspath} gst-launch-1.0 {videopipeline} {audiopipeline} ! {filecreationpipeline}"
+    pipeline = f"{gstreamer}{videopipeline}{audiosource}{audioencode}{filecreation}"
 
     decky.logger.info("Running pipeline: " + pipeline)
     Plugin._process = subprocess.Popen(pipeline, shell=True, env=self._env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
