@@ -9,6 +9,8 @@ import decky
 class Plugin:
   _process = None
   _env = {**os.environ, "LD_LIBRARY_PATH":"", "XDG_RUNTIME_DIR":"/run/user/1000"}
+
+
   # Record the gamescope pipewire node
   async def start_record(self, app_name: str, microphone: bool):
     # Generate a gstreamer pipeline
@@ -27,6 +29,7 @@ class Plugin:
     Plugin._process = subprocess.Popen(pipeline, shell=True, env=self._env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     return
 
+
   async def stop_record(self):
     decommission = Plugin._process
     Plugin._process = None
@@ -41,6 +44,7 @@ class Plugin:
     for line in decommission.stdout:
       decky.logger.info("stdout: " + line)
     return
+
 
   async def is_recording(self) -> bool:
     return Plugin._process != None
