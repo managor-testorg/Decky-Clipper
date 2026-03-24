@@ -2,6 +2,7 @@ import os
 import signal
 from datetime import datetime
 import subprocess
+import asyncio
 
 import decky
 
@@ -27,10 +28,14 @@ class Plugin:
 
     decky.logger.info("Running pipeline: " + pipeline)
     Plugin._process = subprocess.Popen(pipeline, shell=True, env=self._env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+
+    asyncio.create_task(asyncio.to_thread(self.log_stdout))
+
     return
 
 
   async def stop_record(self):
+    decky.logger.info("Stopping recording.")
     decommission = Plugin._process
     Plugin._process = None
     decky.logger.info("Sending signal to terminate.")
@@ -40,14 +45,20 @@ class Plugin:
     except Exception:
       decky.logger.info("Couldn't terminate. Killing.")
       decommission.kill()
+    decky.logger.info("Recording stopped.")
 
-    for line in decommission.stdout:
-      decky.logger.info("stdout: " + line)
-    return
 
 
   async def is_recording(self) -> bool:
     return Plugin._process != None
+
+
+  def log_stdout(self):
+    decky.logger.info("Logging stdout")
+    for line in Plugin._process.stdout:
+      decky.logger.info("STDOUT: " + line.rstrip())
+    decky.logger.info("End of stdout")
+
 
 
 
