@@ -69,6 +69,8 @@ class Plugin:
   # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
   async def _main(self):
     decky.logger.info("Plugin loaded!")
+    decky.logger.info("Device variant: " + subprocess.check_output(["atomupd-manager", "tracked-variant"], text=True).rstrip())
+    decky.logger.info("Release branch: " + subprocess.check_output(["atomupd-manager", "tracked-branch"], text=True).rstrip())
 
   # Function called first during the unload process, utilize this to handle your plugin being stopped, but not
   # completely removed
