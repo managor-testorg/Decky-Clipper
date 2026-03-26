@@ -30,7 +30,6 @@ class Plugin:
     Plugin._process = subprocess.Popen(pipeline, shell=True, env=self._env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
     asyncio.create_task(asyncio.to_thread(self.log_stdout))
-
     return
 
 
@@ -46,7 +45,7 @@ class Plugin:
       decky.logger.info("Couldn't terminate. Killing.")
       decommission.kill()
     decky.logger.info("Recording stopped.")
-
+    return
 
 
   async def is_recording(self) -> bool:
@@ -58,6 +57,7 @@ class Plugin:
     for line in Plugin._process.stdout:
       decky.logger.info("STDOUT: " + line.rstrip())
     decky.logger.info("End of stdout")
+    return
 
 
 
