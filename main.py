@@ -19,7 +19,7 @@ class Plugin:
     if Plugin._httpd:
       return
     try:
-      handler = partial(SimpleHTTPRequestHandler, directory="/home/deck/Videos")
+      handler = partial(SimpleHTTPRequestHandler, directory="/hasdasdasdome/deck/Videos")
       Plugin._httpd = ThreadingHTTPServer(("0.0.0.0", 8000), handler)
     except OSError as e:
       decky.logger.error(f"HTTP server failed: {e}")
