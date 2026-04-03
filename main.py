@@ -42,7 +42,7 @@ class Plugin:
     filecreation = f"matroskamux name=mux ! filesink 'location={decky.HOME}/Videos/{filename}'"
 
     pipeline = f"{gstreamer}{videopipeline}{audiosource}{audioencode}{filecreation}"
-
+aaaaaaaaaaaaaa
     decky.logger.info("Running pipeline: " + pipeline)
     Plugin._process = subprocess.Popen(pipeline, shell=True, env=self._env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
